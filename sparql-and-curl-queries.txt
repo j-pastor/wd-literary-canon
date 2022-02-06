@@ -1,0 +1,263 @@
+Q7725634 - Literary work
+
+#####################################################################################################################################################################333
+# ITEMS AND PROPERTIES
+
+curl https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=SELECT+%3Fitem+%3Fprop+%0D%0AWITH+%7B%0D%0A++SELECT+DISTINCT+%3Fitem+WHERE+%7B%0D%0A++%3Fitem+wdt%3AP31+wd%3AQ7725634+%3B%0D%0A++%23+VALUES+%3Fitem+%7Bwd%3AQ182794%7D%0D%0A++%5Eschema%3Aabout+%3Farticle+.%0D%0A++%23FILTER+%28CONTAINS%28str%28%3Farticle%29%2C%22en.wikipe%22%29+%7C%7C+CONTAINS%28str%28%3Farticle%29%2C%22es.wikipe%22%29+%7C%7C+CONTAINS%28str%28%3Farticle%29%2C%22fr.wikipe%22%29+%7C%7C+CONTAINS%28str%28%3Farticle%29%2C%22de.wikipe%22%29+%7C%7C+CONTAINS%28str%28%3Farticle%29%2C%22ru.wikipe%22%29+%7C%7C+CONTAINS%28str%28%3Farticle%29%2C%22it.wikipe%22%29%29%0D%0A++FILTER+%28CONTAINS%28str%28%3Farticle%29%2C%22.wikipe%22%29%29%0D%0A%0D%0A+%7D%0D%0A%7D+AS+%25results%0D%0AWHERE+%7B%0D%0A++INCLUDE+%25results%0D%0A++%3Fp+wikibase%3AdirectClaim+%3Fprop+.%0D%0A++%3Fitem+%3Fprop+%3Fobject.%0D%0A%7D -H "Accept: text/csv" > wikidata-items-properties.csv
+
+
+SELECT ?item ?prop 
+WITH {
+  SELECT DISTINCT ?item WHERE {
+  ?item wdt:P31 wd:Q7725634 ;
+  # VALUES ?item {wd:Q182794}
+  ^schema:about ?article .
+  #FILTER (CONTAINS(str(?article),"en.wikipe") || CONTAINS(str(?article),"es.wikipe") || CONTAINS(str(?article),"fr.wikipe") || CONTAINS(str(?article),"de.wikipe") || CONTAINS(str(?article),"ru.wikipe") || CONTAINS(str(?article),"it.wikipe"))
+  FILTER (CONTAINS(str(?article),".wikipe"))
+
+ }
+} AS %results
+WHERE {
+  INCLUDE %results
+  ?p wikibase:directClaim ?prop .
+  ?item ?prop ?object.
+}
+
+
+
+SELECT DISTINCT ?item ?prop
+WITH {
+  SELECT ?class WHERE {
+    ?class wdt:P279* wd:Q7725634 .
+    BIND(REPLACE(str(?class), "http://www.wikidata.org/entity/Q", "", "i") AS ?o2)
+    FILTER (?o2>"3")
+  }
+} AS %results
+WHERE {
+  INCLUDE %results
+  ?item wdt:P31 ?class ;
+  ^schema:about ?article .
+  FILTER (CONTAINS(str(?article),".wikipe"))
+  ?p wikibase:directClaim ?prop .
+  ?item ?prop ?object.
+}
+
+
+
+
+curl https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=SELECT%20DISTINCT%20%3Fitem%20%3Fprop%20WITH%20%7B%0A%20%20SELECT%20%3Fclass%20WHERE%20%7B%0A%20%20%20%20%3Fclass%20wdt%3AP279%2A%20wd%3AQ7725634%20.%0A%20%20%20%20BIND%28REPLACE%28str%28%3Fclass%29%2C%20%22http%3A%2F%2Fwww.wikidata.org%2Fentity%2FQ%22%2C%20%22%22%2C%20%22i%22%29%20AS%20%3Fo2%29%0A%20%20%20%20FILTER%20%28%3Fo2%3E%223%22%29%0A%20%20%7D%0A%7D%20AS%20%25results%0AWHERE%20%7B%0A%20%20INCLUDE%20%25results%0A%20%20%3Fitem%20wdt%3AP31%20%3Fclass%20%3B%0A%20%20%5Eschema%3Aabout%20%3Farticle%20.%0A%20%20FILTER%20%28CONTAINS%28str%28%3Farticle%29%2C%22.wikipe%22%29%29%0A%20%20%3Fp%20wikibase%3AdirectClaim%20%3Fprop%20.%0A%20%20%3Fitem%20%3Fprop%20%3Fobject.%0A%7D -H "Accept: text/csv" > prueba.csv
+
+
+
+#####################################################################################################################################################################333
+# ITEMS WITH ARTICLES AND WIKIS
+
+
+curl https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=SELECT+%3Fitem+%3Fwiki+%3Farticle+WHERE%0D%0A%7B%0D%0A++%3Fitem+wdt%3AP31+wd%3AQ7725634+%3B%0D%0A++%5E+schema%3Aabout+%3Farticle+.%0D%0A++BIND%28strafter%28strbefore%28str%28%3Farticle%29%2C%22.wikipedia.org%22%29%2C%22https%3A%2F%2F%22%29+AS+%3Fwiki%29%0D%0A++FILTER+%28strlen%28%3Fwiki%29%3E0%29%0D%0A%7D  -H "Accept: text/csv" > wikidata-items-wikis-articles.csv
+
+
+SELECT ?item ?wiki ?article WHERE
+{
+  ?item wdt:P31 wd:Q7725634 ;
+  ^ schema:about ?article .
+  BIND(strafter(strbefore(str(?article),".wikipedia.org"),"https://") AS ?wiki)
+  FILTER (strlen(?wiki)>0)
+}
+
+
+#####################################################################################################################################################################
+# ITEMS AND LANGUAGES
+
+curl https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=SELECT+DISTINCT+%3Fitem+%3Flang+%28COALESCE%28%3Fcode%2C+%3Fcode2%2C+%3Fcode3%2C+%3Fcode4%2C+%3Fcode5%29+as+%3Fcode_lang%29+%3Fsource%0D%0AWITH+%7B%0D%0A++SELECT+DISTINCT+%3Fitem+WHERE+%7B%0D%0A++%3Fitem+wdt%3AP31+wd%3AQ7725634+%3B+%5Eschema%3Aabout+%3Farticle+.%0D%0A++FILTER+%28CONTAINS%28str%28%3Farticle%29%2C%22.wikipe%22%29%29%0D%0A+%7D%0D%0A%7D++AS+%25results%0D%0A%0D%0AWHERE+%7B%0D%0A++INCLUDE+%25results%0D%0A++OPTIONAL+%7B%0D%0A++++%3Fitem+wdt%3AP407+%3Flang+.%0D%0A++++BIND%28%22P407%22+AS+%3Fsource%29%0D%0A++++OPTIONAL+%7B%3Flang+wdt%3AP305+%3Fcode+.%7D%0D%0A++++OPTIONAL+%7B%3Flang+wdt%3AP1232+%3Fcode+.%7D%0D%0A++++OPTIONAL+%7B%3Flang+wdt%3AP424+%3Fcode+.%7D%0D%0A++%7D%0D%0A++OPTIONAL+%7B%0D%0A++++%3Fitem+wdt%3AP1476+%3Ftitle+.%0D%0A++++BIND%28lang%28%3Ftitle%29+AS+%3Fcode2%29%0D%0A++++BIND%28%22TITLE%22+AS+%3Fsource%29%0D%0A++++OPTIONAL+%7B%3Flang+wdt%3AP305+%3Fcode2+.%7D%0D%0A++++OPTIONAL+%7B%3Flang+wdt%3AP1232+%3Fcode2+.%7D%0D%0A++++OPTIONAL+%7B%3Flang+wdt%3AP424+%3Fcode2+.%7D%0D%0A++%7D%0D%0A%7D+  -H "Accept: text/csv" > wikidata-items-languages.csv
+
+
+SELECT DISTINCT ?item ?lang (COALESCE(?es_label, ?en_label, ?item_label) AS ?langLabel) (COALESCE(?code, ?code2, ?code3, ?code4, ?code5) as ?code_lang) ?source
+WITH {
+  SELECT DISTINCT ?item WHERE {
+  ?item wdt:P31 wd:Q7725634 ; ^schema:about ?article .
+  FILTER (CONTAINS(str(?article),".wikipe"))
+ }
+}  AS %results
+
+WHERE {
+  INCLUDE %results
+  OPTIONAL {
+    ?item wdt:P407 ?lang .
+    BIND("P407" AS ?source)
+    OPTIONAL {?lang wdt:P305 ?code .}
+    OPTIONAL {?lang wdt:P1232 ?code .}
+    OPTIONAL {?lang wdt:P424 ?code .}
+  }
+  OPTIONAL {
+    ?item wdt:P1476 ?title .
+    BIND(lang(?title) AS ?code2)
+    BIND("TITLE" AS ?source)
+    OPTIONAL {?lang wdt:P305 ?code2 .}
+    OPTIONAL {?lang wdt:P1232 ?code2 .}
+    OPTIONAL {?lang wdt:P424 ?code2 .}
+  }
+} 
+
+
+#####################################################################################################################################################################
+# WIKIDATA PROPERTIES
+
+
+curl https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=SELECT+%3Fproperty+%3FpropertyLabel+%3FpropertyDescription++WHERE+%7B%0D%0A++++%3Fproperty+a+wikibase%3AProperty+.%0D%0A++++SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22es%2Cen%22+.%7D%0D%0A%7D -H "Accept: text/csv" > wikidata-properties.csv
+
+
+SELECT ?property ?propertyLabel ?propertyDescription  WHERE {
+    ?property a wikibase:Property .
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "es,en" .}
+}
+
+
+#####################################################################################################################################################################333
+# WIKIDATA ID PROPERTIES
+
+curl https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=SELECT+DISTINCT+%3Fprop_id+WHERE+%0D%0A%7B%3Fprop_id+wdt%3AP31%2Fwdt%3AP279%2A++wd%3AQ19847637+.%0D%0A%7D -H "Accept: text/csv" > wikidata-id-properties.csv
+
+SELECT DISTINCT ?prop_id WHERE 
+{?prop_id wdt:P31/wdt:P279*  wd:Q19847637 .
+}  
+
+
+#####################################################################################################################################################################
+# ITEMS WITH DATES
+
+curl https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=SELECT+DISTINCT+%3Fitem+%28year%28%3Fdate%29+AS+%3Fpub_date%29+%28year%28%3Finception%29+AS+%3Finception_date%29%0D%0AWITH+%7B%0D%0A++SELECT+%3Fitem+WHERE+%7B%0D%0A++%3Fitem+wdt%3AP31+wd%3AQ7725634+%3B%0D%0A++%5Eschema%3Aabout+%3Farticle+.%0D%0A++%23FILTER+%28CONTAINS%28str%28%3Farticle%29%2C%22en.wikipe%22%29+%7C%7C+CONTAINS%28str%28%3Farticle%29%2C%22es.wikipe%22%29+%7C%7C+CONTAINS%28str%28%3Farticle%29%2C%22fr.wikipe%22%29+%7C%7C+CONTAINS%28str%28%3Farticle%29%2C%22de.wikipe%22%29+%7C%7C+CONTAINS%28str%28%3Farticle%29%2C%22ru.wikipe%22%29+%7C%7C+CONTAINS%28str%28%3Farticle%29%2C%22it.wikipe%22%29%29%0D%0A++FILTER+%28CONTAINS%28str%28%3Farticle%29%2C%22.wikipe%22%29%29%0D%0A%0D%0A+%7D%0D%0A%7D+AS+%25results%0D%0AWHERE+%7B%0D%0A++INCLUDE+%25results%0D%0A++OPTIONAL+%7B%3Fitem+wdt%3AP577+%3Fdate.%7D%0D%0A++OPTIONAL+%7B%3Fitem+wdt%3AP571+%3Finception.%7D%0D%0A%7D -H "Accept: text/csv" > wikidata-items-dates.csv
+
+
+SELECT DISTINCT ?item (year(?date) AS ?pub_date) (year(?inception) AS ?inception_date)
+WITH {
+  SELECT ?item WHERE {
+  ?item wdt:P31 wd:Q7725634 ;
+  ^schema:about ?article .
+  #FILTER (CONTAINS(str(?article),"en.wikipe") || CONTAINS(str(?article),"es.wikipe") || CONTAINS(str(?article),"fr.wikipe") || CONTAINS(str(?article),"de.wikipe") || CONTAINS(str(?article),"ru.wikipe") || CONTAINS(str(?article),"it.wikipe"))
+  FILTER (CONTAINS(str(?article),".wikipe"))
+
+ }
+} AS %results
+WHERE {
+  INCLUDE %results
+  OPTIONAL {?item wdt:P577 ?date.}
+  OPTIONAL {?item wdt:P571 ?inception.}
+}
+
+
+################
+# WITH PRECISION
+
+curl https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=SELECT+DISTINCT+%3Fitem+%28year%28%3Fdate%29+AS+%3Fpub_date%29+%3Fprecision_Date++%28year%28%3Finception%29+AS+%3Finception_date%29+%3Fprecision_Inception%0D%0AWITH+%7B%0D%0A++SELECT+%3Fitem+WHERE+%7B%0D%0A++%3Fitem+wdt%3AP31+wd%3AQ7725634+%3B%0D%0A++%5Eschema%3Aabout+%3Farticle+.%0D%0A++%23FILTER+%28CONTAINS%28str%28%3Farticle%29%2C%22en.wikipe%22%29+%7C%7C+CONTAINS%28str%28%3Farticle%29%2C%22es.wikipe%22%29+%7C%7C+CONTAINS%28str%28%3Farticle%29%2C%22fr.wikipe%22%29+%7C%7C+CONTAINS%28str%28%3Farticle%29%2C%22de.wikipe%22%29+%7C%7C+CONTAINS%28str%28%3Farticle%29%2C%22ru.wikipe%22%29+%7C%7C+CONTAINS%28str%28%3Farticle%29%2C%22it.wikipe%22%29%29%0D%0A++FILTER+%28CONTAINS%28str%28%3Farticle%29%2C%22.wikipe%22%29%29%0D%0A%0D%0A+%7D%0D%0A%7D+AS+%25results%0D%0AWHERE+%7B%0D%0A++INCLUDE+%25results%0D%0A++OPTIONAL+%7B%3Fitem+wdt%3AP577+%3Fdate.%0D%0A+++++++++++OPTIONAL+%7B%3Fitem+p%3AP577%2Fpsv%3AP577%2Fwikibase%3AtimePrecision+%3Fprecision_Date%7D%7D%0D%0A++OPTIONAL+%7B%3Fitem+wdt%3AP571+%3Finception.%0D%0A+++++++++++OPTIONAL+%7B%3Fitem+p%3AP571%2Fpsv%3AP571%2Fwikibase%3AtimePrecision+%3Fprecision_Inception%7D%7D%0D%0A%7D -H "Accept: text/csv" > wikidata-items-dates.csv
+
+
+SELECT DISTINCT ?item (year(?date) AS ?pub_date) ?precision_Date  (year(?inception) AS ?inception_date) ?precision_Inception
+WITH {
+  SELECT ?item WHERE {
+  ?item wdt:P31 wd:Q7725634 ;
+  ^schema:about ?article .
+  #FILTER (CONTAINS(str(?article),"en.wikipe") || CONTAINS(str(?article),"es.wikipe") || CONTAINS(str(?article),"fr.wikipe") || CONTAINS(str(?article),"de.wikipe") || CONTAINS(str(?article),"ru.wikipe") || CONTAINS(str(?article),"it.wikipe"))
+  FILTER (CONTAINS(str(?article),".wikipe"))
+
+ }
+} AS %results
+WHERE {
+  INCLUDE %results
+  OPTIONAL {?item wdt:P577 ?date.
+           OPTIONAL {?item p:P577/psv:P577/wikibase:timePrecision ?precision_Date}}
+  OPTIONAL {?item wdt:P571 ?inception.
+           OPTIONAL {?item p:P571/psv:P571/wikibase:timePrecision ?precision_Inception}}
+}
+
+
+
+
+
+#####################################################################################################################################################################
+# ITEMS WITH TITLES
+
+
+curl https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=SELECT+DISTINCT+%3Fitem+%28SAMPLE%28COALESCE%28%3Fes_label%2C+%3Fen_label%2C+%3Fitem_label%2C++%3Fitem_label_def%29%29+as+%3Flabel%29+WHERE%0D%0A%7B%0D%0A++%3Fitem+wdt%3AP31+wd%3AQ7725634+%3B%0D%0A++%5Eschema%3Aabout+%3Farticle+.%0D%0A++FILTER+%28CONTAINS%28str%28%3Farticle%29%2C%22.wikipe%22%29%29%0D%0A++OPTIONAL+%7B%3Fitem+rdfs%3Alabel+%3Fes_label+.+FILTER%28LANG%28%3Fes_label%29+%3D+%22es%22%29%7D%0D%0A++OPTIONAL+%7B%3Fitem+rdfs%3Alabel+%3Fen_label+.+FILTER%28LANG%28%3Fen_label%29+%3D+%22en%22%29%7D%0D%0A++OPTIONAL+%7B%3Fitem+rdfs%3Alabel+%3Fitem_label%7D%0D%0A++BIND%28IF%28%21BOUND%28%3Fitem_label%29+%26%26+%21BOUND%28%3Fes_label%29+%26%26+%21BOUND%28%3Fen_label%29%2C%22none%22%2C%3Fitem_label%29+AS+%3Fitem_label_def%29%0D%0A%7D+GROUP+BY+%3Fitem -H "Accept: text/csv" > wikidata-items-titles.csv
+
+curl https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=SELECT+DISTINCT+%3Fitem+%28SAMPLE%28COALESCE%28%3Fen_label%2C+%3Fes_label%2C+%3Fitem_label%2C++%3Fitem_label_def%29%29+as+%3Flabel%29+WHERE%0D%0A%7B%0D%0A++%3Fitem+wdt%3AP31+wd%3AQ7725634+%3B%0D%0A++%5Eschema%3Aabout+%3Farticle+.%0D%0A++FILTER+%28CONTAINS%28str%28%3Farticle%29%2C%22.wikipe%22%29%29%0D%0A++OPTIONAL+%7B%3Fitem+rdfs%3Alabel+%3Fes_label+.+FILTER%28LANG%28%3Fes_label%29+%3D+%22es%22%29%7D%0D%0A++OPTIONAL+%7B%3Fitem+rdfs%3Alabel+%3Fen_label+.+FILTER%28LANG%28%3Fen_label%29+%3D+%22en%22%29%7D%0D%0A++OPTIONAL+%7B%3Fitem+rdfs%3Alabel+%3Fitem_label%7D%0D%0A++BIND%28IF%28%21BOUND%28%3Fitem_label%29+%26%26+%21BOUND%28%3Fes_label%29+%26%26+%21BOUND%28%3Fen_label%29%2C%22none%22%2C%3Fitem_label%29+AS+%3Fitem_label_def%29%0D%0A%7D+GROUP+BY+%3Fitem -H "Accept: text/csv" > wikidata-items-titles-bis.csv
+
+SELECT DISTINCT ?item (SAMPLE(COALESCE(?es_label, ?en_label, ?item_label,  ?item_label_def)) as ?label) WHERE
+{
+  ?item wdt:P31 wd:Q7725634 ;
+  ^schema:about ?article .
+  FILTER (CONTAINS(str(?article),".wikipe"))
+  OPTIONAL {?item rdfs:label ?es_label . FILTER(LANG(?es_label) = "es")}
+  OPTIONAL {?item rdfs:label ?en_label . FILTER(LANG(?en_label) = "en")}
+  OPTIONAL {?item rdfs:label ?item_label}
+  BIND(IF(!BOUND(?item_label) && !BOUND(?es_label) && !BOUND(?en_label),"none",?item_label) AS ?item_label_def)
+} GROUP BY ?item
+
+
+SELECT DISTINCT ?item (SAMPLE(COALESCE(?en_label, ?es_label, ?item_label,  ?item_label_def)) as ?label) WHERE
+{
+  ?item wdt:P31 wd:Q7725634 ;
+  ^schema:about ?article .
+  FILTER (CONTAINS(str(?article),".wikipe"))
+  OPTIONAL {?item rdfs:label ?es_label . FILTER(LANG(?es_label) = "es")}
+  OPTIONAL {?item rdfs:label ?en_label . FILTER(LANG(?en_label) = "en")}
+  OPTIONAL {?item rdfs:label ?item_label}
+  BIND(IF(!BOUND(?item_label) && !BOUND(?es_label) && !BOUND(?en_label),"none",?item_label) AS ?item_label_def)
+} GROUP BY ?item
+
+
+#####################################################################################################################################################################
+# ITEMS WITH NUMBER OF ITEMS AND STATEMENTS
+
+SELECT DISTINCT ?item ?num_wikis (COUNT(?object) AS ?num_statement)
+WITH {
+  SELECT ?item (COUNT(?article) AS ?num_wikis) WHERE {
+  ?item wdt:P31 wd:Q7725634 ; ^schema:about ?article .
+  FILTER (CONTAINS(str(?article),"wikipe"))
+ } GROUP BY ?item HAVING (count(?article)>0)
+} AS %results
+WHERE {
+  INCLUDE %results
+  ?p wikibase:directClaim ?prop .
+  ?item ?prop ?object.
+} GROUP BY ?item ?num_wikis
+
+
+#####################################################################################################################################################################333
+# WIKIDATA LANGUAGES
+
+SELECT DISTINCT ?lang (COALESCE(?es_label, ?en_label, ?item_label) AS ?langLabel) (COALESCE(?code, ?code3) AS ?code_lang) WHERE {
+  {
+    ?lang wdt:P31 wd:Q34770.
+  }
+  OPTIONAL {
+    ?lang rdfs:label ?es_label.
+    FILTER((LANG(?es_label)) = "es")
+  }
+  OPTIONAL {
+    ?lang rdfs:label ?en_label.
+    FILTER((LANG(?en_label)) = "en")
+  }
+  OPTIONAL { ?lang rdfs:label ?lang_label. }
+  OPTIONAL { ?lang wdt:P305 ?code. }
+  OPTIONAL { ?lang wdt:P1232 ?code3. }
+}
+
+
+#####################################################################################################################################################################333
+# PROPERTIES AND NUMBER OF ITEM
+
+SELECT ?prop (count(distinct ?item) as ?item_number)
+WITH {
+  SELECT ?item (COUNT(?article) AS ?num_wikis) WHERE {
+  ?item wdt:P31 wd:Q7725634 ;
+  ^schema:about ?article .
+  FILTER (CONTAINS(str(?article),".wikipe"))
+ } GROUP BY ?item
+} AS %results
+WHERE
+{
+  INCLUDE %results .
+  ?p wikibase:directClaim ?prop .
+  ?item ?prop ?object.
+}
+GROUP BY (?prop)
